@@ -1,77 +1,35 @@
 import React, { Component } from 'react';
+import Summary from './summary/Summary';
+import Features from './features/Features';
+import defaultDB from './Stores/defaultDB';
 import './App.css';
 
 class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      selected: {
-        Processor: {
-            name: '17th Generation Intel Core HB (7 Core with donut spare)',
-            cost: 700
-          },
-        "Operating System": {
-            name: 'Ubuntu Linux 16.04',
-            cost: 200
-          },
-        "Video Card":{
-            name: 'Toyota Corolla 1.5v',
-            cost: 1150.98
-          },
-        Display: {
-            name: '15.6" UHD (3840 x 2160) 60Hz Bright Lights and Knobs',
-            cost: 1500
-          }
-      }
+      selected: defaultDB.selected
     }
+    this.updateFeature = this.updateFeature.bind(this);
   }
 
   updateFeature(feature, newValue) {
+    // add user clicked item to the selected array
+    //                        target    source
     const selected = Object.assign({}, this.state.selected);
+    // based on the clicked item the data is switched out display: new value
     selected[feature] = newValue;
+    // update the state.selected 
     this.setState({
       selected
     });
   }
 
   render() {
-    const summary = Object.keys(this.state.selected)
-          .map(key => <div className="summary__option" key={key}>
-            <div className="summary__option__label">{key}  </div>
-            <div className="summary__option__value">{this.state.selected[key].name}</div>
-            <div className="summary__option__cost">
-              { new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'})
-                  .format(this.state.selected[key].cost) }
-            </div>
-        </div>)
 
-    const total = Object.keys(this.state.selected)
-          .reduce((acc, curr) => acc + this.state.selected[curr].cost, 0);    
-
-
-    const features = Object.keys(this.props.features)
-          .map(key => {
-            const options = this.props.features[key].map((item, index) => {
-              const selectedClass = item.name === this.state.selected[key].name ? 'feature__selected' : '';
-              const featureClass = 'feature__option ' + selectedClass;
-              return <li key={index} className="feature__item">
-                <div className={featureClass}
-                  
-                  onClick={e => this.updateFeature(key, item)}>
-                    { item.name }
-                    ({ new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'})
-                      .format(item.cost) })
-                </div>
-              </li>
-            });
-
-            return <div className="feature" key={key}>
-              <div className="feature__name">{key}</div>
-              <ul className="feature__list">
-                { options }
-              </ul>
-            </div>
-          });      
+    // Add all of the costs togeter for total in summary bar
+    const total = Object.keys(defaultDB.selected)
+          .reduce((acc, curr) => acc + defaultDB.selected[curr].cost, 0);              
 
     return (
       <div className="App">
@@ -82,15 +40,23 @@ class App extends Component {
         </header>      
         <main>
           <section className="main__form">
+            {/* main section rendering the features */}
             <h3>TECH SPECS AND CUSTOMIZATIONS</h3>
-            { features }
+            <Features
+              features={this.props.features}
+              selected={defaultDB.selected}
+              updateFeature={this.updateFeature}
+            />
           </section>
           <section className="main__summary">
+            {/* create the summary bar and populate it */}
             <h3>NEW GREENLEAF 2018</h3>
-            {summary}
+
+              <Summary selected={this.state.selected}/>
             <div className="summary__total">
               <div className="summary__total__label">Your Price: </div>
               <div className="summary__total__value">
+                {/* add style and format the cost */}
               { new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'})
                   .format(total) }
               </div>
