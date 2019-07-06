@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import Header from './header/Header';
 import Summary from './summary/Summary';
 import Features from './features/Features';
+import Total from './totalSummary/total';
 import defaultDB from './Stores/defaultDB';
 import './App.css';
 
@@ -28,16 +30,12 @@ class App extends Component {
   render() {
 
     // Add all of the costs togeter for total in summary bar
-    const total = Object.keys(defaultDB.selected)
-          .reduce((acc, curr) => acc + defaultDB.selected[curr].cost, 0);              
+    const total = Object.keys(this.state.selected)
+          .reduce((acc, curr) => acc + this.state.selected[curr].cost, 0);              
 
     return (
       <div className="App">
-        <header>
-          <h1>ELF Computing</h1>
-          <h3>Laptops</h3>
-          <h5>Customize your laptop</h5>  
-        </header>      
+            <Header/>
         <main>
           <section className="main__form">
             {/* main section rendering the features */}
@@ -53,14 +51,7 @@ class App extends Component {
             <h3>NEW GREENLEAF 2018</h3>
 
               <Summary selected={this.state.selected}/>
-            <div className="summary__total">
-              <div className="summary__total__label">Your Price: </div>
-              <div className="summary__total__value">
-                {/* add style and format the cost */}
-              { new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD'})
-                  .format(total) }
-              </div>
-            </div>
+              <Total total={total}/>
           </section>
         </main>
       </div>
